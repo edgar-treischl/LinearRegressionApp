@@ -1,0 +1,1 @@
+##### We know better, don't we? We have already fitted a regression line and based on the observed values, X explains Y to a certain amount. The next output shows the explained variance - the green area - the amount of Y that can actually be explained by X:

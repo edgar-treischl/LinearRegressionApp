@@ -1,0 +1,3 @@
+##### You may say, we make an error, no big deal! Well, to understand whether this is a big deal, we should check several aspects. At least you should know R-squared. It is an indicator which helps us to assess how big the mistake is or how well the model explains the outcome.
+
+##### To understand R-squared, we have to think about the total variance between X and Y. Let's assume that X cannot explain Y at all. What would you say, how would a corresponding regression line or the graph look like?

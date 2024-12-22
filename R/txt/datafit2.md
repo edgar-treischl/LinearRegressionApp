@@ -1,0 +1,1 @@
+##### Most times the prediction of the regression is not perfect, so we make a mistake or an error. In the output the error is displayed in red. It's the deviation between the predicted value (regression line) and the observed value. What would you say in your case? How well explains X your outcome?

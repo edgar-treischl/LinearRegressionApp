@@ -1,0 +1,1 @@
+##### Now that we know whether X and Y are associated, can you tell me how strong the effect is? Let's use the regression results and visualise the point estimates from the regression. Has X a strong effect on Y?

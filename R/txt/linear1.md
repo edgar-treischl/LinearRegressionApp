@@ -1,0 +1,3 @@
+##### In a linear regression, we estimate the effect of an independent variable X on a dependent variable Y. Often, we use several independent variables to predict Y, but let's stick to the simple model with two variables. The principals of a linear regression are the same.
+
+##### So, what happens when we regress X on Y? We calculate the linear association between X and Y and we try to fit a line in accordance to our data. We can use a scatter plot to check the linear association. Let's have a look for the chosen variables:

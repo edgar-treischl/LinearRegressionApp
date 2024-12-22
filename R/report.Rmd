@@ -1,0 +1,200 @@
+---
+title: "Regression in a Nutshell"
+output: word_document
+author: Edgar J. Treischl
+params:
+  dataname: NA
+  data: NA
+  iv: NA
+  dv: NA
+  namedv: NA
+  nameiv: NA
+---
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#install.packages("XX") to install a package
+library(ggplot2)
+iv <- unlist(params$iv)
+dv <- unlist(params$dv)
+namex <- unlist(params$nameiv)
+namey <- unlist(params$namedv)
+df <- data.frame(dv, iv)
+
+#head(df)
+#names(df)[2]
+mod <- lm(dv ~ iv, df)
+ypred <- predict(mod)
+df <- data.frame(dv, iv, ypred, as.factor(namex), as.factor(namey))
+
+Y <- mean(df$dv)
+SST <- sum((df$dv - Y)^2)
+SSE <- round(sum((df$dv - df$ypred)^2), digits = 5)
+SSA <- SST - SSE
+SSQ <- data.frame(SS = c("Total","Regression","Error"),
+                  value = as.numeric(c(SST, SSA, SSE)/SST)*100)
+SSQ$SS <- factor(SSQ$SS, as.character(SSQ$SS))
+SSdata <- data.frame(SS = factor(SSQ$SS, as.character(SSQ$SS)),
+                         value = as.numeric(c(SST, SSA, SSE)/SST)*100)
+```
+
+
+This is a short summary for the ["Regression in a Nutshell"](http://edgar-treischl.de/teaching-material/other-teaching-material__trashed/regression/) app and the Word document contains all outputs of the app. This application is still *work in progress*. <a href="mailto:edgar.treischl@fau.de">Feel free to contact me</a> if you have feedback, if you see any typos, or if you have any ideas how to improve the current version.
+
+
+
+## The data
+Let's start by looking at the data. You decided to work with the `r params$dataname` data set. Here you see the variables the data set contains:
+
+```{r, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+head(params$data, n = 5)
+```
+
+
+When it comes to data analysis, it's always a good start to get yourself familiar with the data. What was measured and on what scale? So next, you see the summary statistics for the independent variable `r params$nameiv` and the dependent variable `r params$namedv`. Hopefully, this  gives you an impression how your variables are measured and distributed. Probably, you should also look at a histogram to get a clearer picture how your variables are distributed.
+```{r, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+#####
+summary (cbind(params$iv, params$dv))
+
+```
+
+In our case, the summary statistics should be sufficient to get an idea about the data and the chosen variables. Let's use this data to illustrate a linear regression analysis.
+
+## The Basic Idea of a Linear Regression
+
+In a linear regression, we predict an outcome Y with one independent variable X. Often, we use several independent variables to predict Y, but let's stick to the bivariate case with two variables. The principals of a linear regression can be easier explained this way. So, what is done by the regression? Actually, we try to fit a line in accordance to our data and we calculate the linear association between X and Y. We can use a scatter plot to check if our variables are associated in a linear fashion. Let's have a look for the chosen variables:
+                                
+```{r fig.width=5, fig.height=3, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(df, aes(x=iv, y=dv)) + 
+  geom_point()+
+  theme(axis.title = element_text(size = 14),
+        axis.text  = element_text(size = 14),
+        panel.background=element_rect(fill="white",colour="black"))+
+  ggtitle("Scatterplot")+
+  xlab(namex[1])+
+  ylab(namey[1])
+
+```
+
+What would you say? Is there a linear association between X and Y? We should think about using other analysis techniques in the case of a clear non-linear trend. For illustration purposes we can stick with your variables and run a regression to see what happens in that black-box. We can use different statistic software to calculate the intercept (where the linear function intersects the y-axis) and an estimate for the independent variable, the beta-coefficient.  
+
+
+You get the following output from your statistic software:
+
+```{r , eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+ols <- lm(iv ~ dv, data = df)
+summary(ols)
+```
+
+Can you interpret the results? Look at the intercept and the beta-coefficient. The intercept tells you the predicted value of y in case of x = 0. Often this makes no sense at all, but from a mathematical point of view, the regression line starts here. The beta-coefficient tells you how much y is increased (or decreased) if x goes up by 1 unit. And in many instances you can directly see wether an effect is statistically significant, often indicated by the asterisk(*).
+
+Now that we know whether X and Y are associated, can you tell me how strong the effect is? Let's use the regression results and visualise both point estimates from the regression. Look, has X a strong effect on Y?
+
+```{r fig.width=5, fig.height=3, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+ggcoef(ols, vline_color="red")+
+  ylab("Coefficient")+
+  xlab("Point estimate")+
+  theme(axis.title = element_text(size = 14),
+        axis.text.x  = element_text(size = 0),
+        axis.text.y  = element_text(size = 14),
+        panel.background=element_rect(fill="white",colour="black")) 
+```
+
+
+Don't be fooled by point estimates of that graph, regarless whether it looks like a small or a big effect, the graph only shows the point estimate. The estimates depend on the scale of your variables at hand. Thus, a small coefficient is substantial in case your variable has a small range. However, if your variable has a very large scale, a small effect may be negligible. Thus, we need the summary statistics to get an idea about the effect size and the range of our variables.
+
+
+## Datafit
+
+Irrespective of the statistical significance and the effect size, one question still remains: How well does X explain Y? In many cases the prediction of the regression is not perfect, so we make a mistake or an error. Here you can see the error in red. It's the deviation between the predicted value (regression line) and the observed values. What would you say in your case? How well can X explain your outcome?
+
+```{r fig.width=5, fig.height=3, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+### Error
+ggplot(df, aes(x = iv, y = dv))+
+  geom_point(size=3) + geom_smooth(method= "lm", se = F, colour = "black")+
+  geom_segment(xend = df[,2], yend = df[,3],
+               colour = "#ca0020")+ 
+  theme(axis.title = element_text(size = 12), 
+        axis.text  = element_text(size = 12),
+        panel.background=element_rect(fill="white",colour="black"))+
+  ggtitle("Total error")+
+  xlab(namex[1])+
+  ylab(namey[1])
+
+```
+
+
+
+You may say, we make an error, no big deal! Well, in order to understand whether this is a *big deal or not*, we should check several aspects. For now, you should at least know what *R-squared* means. It is an indicator which helps us to evaluate how big the mistake is or how well the model explains the outcome. 
+
+In order to unterstand R-squared, we have to think about the *total variance* between X and Y. Let's assume for a moment that X cannot explain Y at all. What would you say, how would a corresponding regression line look like?
+
+```{r fig.width=5, fig.height=3, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(df, aes(x=iv,y=dv))+
+    geom_point(size=3) +
+    geom_segment(xend = df[,2], yend = mean(df[,1]),
+                 colour = "#619CFF")+
+    geom_hline(yintercept = mean(df[,1]))+
+    theme(axis.title = element_text(size = 12),
+          axis.text  = element_text(size = 12),
+          panel.background=element_rect(fill="white",colour="black"))+
+    ggtitle("Total variance")+
+    xlab(namex[1])+
+    ylab(namey[1])
+```
+
+It would be flat or constant. Regardless of the X value, we would observe always the same Y value. Thus, the blue lines in the graph above show you the total variance between X and Y and in our case the total error we could possibly make, since X cannot explain Y at all.
+
+
+However, we alread already fitted a regression line and based on the observed values of x we can probably explain y to a certain amount. Here you see the *explained variance* - the green area - the amount of Y that actually can be explained by X:
+
+```{r fig.width=5, fig.height=3, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+### Explained Variance
+ggplot(df, aes(x=iv,y=dv))+
+  geom_point(alpha=0)+
+  geom_smooth(method= "lm", se = F, colour = "black")+
+  geom_hline(yintercept = mean(df[,1]))+
+  geom_segment(aes(x=iv,y=ypred), xend = df[,2],
+                   yend = mean(df[,1]),
+                   colour = "#008837")+
+  theme(axis.title = element_text(size = 12),
+        axis.text  = element_text(size = 12),
+        panel.background=element_rect(fill="white",colour="black"))+
+  ggtitle("Variance explained by X")+
+  xlab(namex[1])+
+  ylab(namey[1])
+```
+
+
+Thus, we know the total variance and the explained variance. Therefore, we can evaluate the error by calculating *R-squared*, which is the proportion (%) of the variance of Y that is predictable based on the regression. The last bar plot shows you all of the three variance components.
+
+
+```{r fig.width=5, fig.height=3, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+### Explained Variance
+cols <- c("#0571b0", "#008837", "#ca0020")
+ggplot(SSdata, aes(y = value, x = SS, fill = SS))+
+  geom_bar(stat = "identity")+
+  scale_fill_manual(values = cols)+
+  theme(axis.title = element_text(size = 12),
+        axis.text.x  = element_text(size = 0),
+        axis.text.y  = element_text(size = 12),
+        panel.background=element_rect(fill="white",colour="black")) +
+  ylab("% of explained variance")+
+  xlab("")+
+  theme(legend.position = "bottom")+
+  theme(legend.title = element_text(colour="black", size=12, face="bold"))+
+  theme(legend.text = element_text(colour="black", size=12, face="bold"))+
+  labs(fill = "Variance")
+
+
+```
+
+
+Now it's up to you! How well does your X explains your outcome?
+
+##Summary
+- By doing a linear regression, we can calculate the effect of a numeric (or nominal/ordinal) independent variable on a numeric dependent variable.
+- To this end we assumed, that there is a linear association (a linear function) between the variables.
+- Besides linearity, a linear regression relies on several assumptions which need to be carefully checked, in order to make sure that we do not calculate a biased or less efficient estimate.
+- Please, keep in mind that statistical significance tells you little about the size of an effect.
+- And don't forget *R-squared*, you can evaluate how well the model explains the outcome.
+
+

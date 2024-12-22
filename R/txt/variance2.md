@@ -1,0 +1,1 @@
+##### You can see it in the output, the regression line would be flat or constant. Regardless of the X value, we would observe the same Y value. Thus, the blue lines in the graph above show you the total variance between X and Y, and since we assume that X cannot explain Y at all, that's the total error we could make. 

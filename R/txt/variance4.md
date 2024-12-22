@@ -1,0 +1,1 @@
+##### So we know the total variance and the explained variance. Thus, we can assess the error by calculating R-squared, which is the proportion (%) of the variance of Y that is predictable based on the regression. The last bar plot shows all three variance components..
