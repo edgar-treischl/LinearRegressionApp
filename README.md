@@ -46,6 +46,10 @@ OLS, this app provides an accessible and intuitive learning environment.
 
 ## 🌐 Visit the App
 
-🧪 Try the live version here: [**Launch
-App**](https://your-shiny-app-url.com)  
-📁 Or run it locally with `shiny::runApp()`
+You can view the app on my [my
+website](http://edgar-treischl.de/projects) or run via:
+
+``` r
+library(shiny)
+runGitHub("LinearRegressionApp", "edgar-treischl", ref="main")
+```
