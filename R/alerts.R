@@ -3,6 +3,7 @@
 register_alerts <- function(input, session) {
   observeEvent(input$reginfo, {
     show_alert(
+      title = NULL,
       text = tags$span(
         tags$h3("Some help:", icon("lightbulb"), style = "color: #008080;"),
         "The intercept shows the predicted value when x is 0. ",
@@ -14,6 +15,7 @@ register_alerts <- function(input, session) {
 
   observeEvent(input$coefinfo, {
     show_alert(
+      title = NULL,
       text = tags$span(
         tags$h3("Interpretation?", icon("lightbulb"), style = "color: #008080;"),
         "Always consider the scale. Check the summary statistics."
@@ -24,6 +26,7 @@ register_alerts <- function(input, session) {
 
   observeEvent(input$linearinfo, {
     show_alert(
+      title = NULL,
       text = tags$span(
         tags$h3("Not linear?", icon("skull-crossbones"), style = "color: #008080;"),
         "OLS assumes linearity. But not all data follows this pattern."

@@ -2,7 +2,6 @@ library(shiny)
 library(GGally)
 library(ggplot2)
 library(rmarkdown)
-library(waiter)
 library(shinyWidgets)
 library(thematic)
 
@@ -21,7 +20,7 @@ ui <- fixedPage(
                  downloadButton("report", "Download Summary"),
                  br(), br(),
                  actionButton("code", "Source Code", icon = icon("github"),
-                              onclick ="window.open('https://github.com/edgar-treischl/OLSinaNutshell.git', '_blank')")
+                              onclick ="window.open('https://github.com/edgar-treischl/LinearRegressionApp', '_blank')")
     ),
 
     mainPanel(width = 9,
@@ -124,8 +123,6 @@ server <- function(input, output, session) {
   })
 
   # All renderPlots
-  # All renderPlots with req checks
-
   output$distPlot_dv <- renderPlot({
     req(input$dv, datasetInput())
     hist_plot(datasetInput(), input$dv)
@@ -177,7 +174,7 @@ server <- function(input, output, session) {
 
   output$model <- renderPrint({ summary(model()) })
 
-  # Alerts (modularized)
+  # Alerts
   register_alerts(input, session)
 
   # Report download handler (same)
