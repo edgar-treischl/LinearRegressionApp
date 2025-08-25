@@ -7,16 +7,16 @@ library(shinyWidgets)
 
 
 
-catholic <- readr::read.csv(here::here("R", "catholic.csv"))
+catholic <- read.csv(here::here("data", "catholic.csv"))
 
 
 
 # Define UI for application that draws a histogram
 ui <- fixedPage(
   theme = bslib::bs_theme(bootswatch = "simplex", primary = "#2a9d8f"), #for theming
-  waiter::use_waiter(),
-  waiter::waiter_show_on_load(html = waiter::spin_flower()),
-  titlePanel("Linear Regression in a Nutshell"),
+  #waiter::use_waiter(),
+  #waiter::waiter_show_on_load(html = waiter::spin_flower()),
+  titlePanel("Linear Regression App"),
   sidebarLayout(
     sidebarPanel(width = 3,
                  h4("Pick data and variables:"),
@@ -35,17 +35,17 @@ ui <- fixedPage(
     mainPanel(width = 9,
               tabsetPanel(type = "tabs",
                           tabPanel("Start", icon = icon("play"),
-                                   includeMarkdown("start.md"),
-                                   includeMarkdown("txt/summary1.md"),
+                                   includeMarkdown("R/start.md"),
+                                   includeMarkdown("R/txt/summary1.md"),
                                    verbatimTextOutput("summary"),
-                                   includeMarkdown("txt/summary2.md"),
+                                   includeMarkdown("R/txt/summary2.md"),
                                    plotOutput("distPlot_dv"),
                                    h6("And the independent variable:"),
                                    plotOutput("distPlot_iv")
 
                           ),
                           tabPanel("Linearity ", icon = icon("ruler"),
-                                   includeMarkdown("txt/linear1.md"),
+                                   includeMarkdown("R/txt/linear1.md"),
                                    plotOutput("scatter"),
                                    h5("What would you say? Is there a linear association between X and Y?"),
                                    actionButton(
@@ -54,7 +54,7 @@ ui <- fixedPage(
                                      icon = icon("chart-line"))
                           ),
                           tabPanel("Regression", icon = icon("rocket"),
-                                   includeMarkdown("txt/regression.md"),
+                                   includeMarkdown("R/txt/regression.md"),
                                    verbatimTextOutput("model"),
                                    h5("Can you interpret the results? Can you calculate
                               the predicted value if X increases by 1 unit?"),
@@ -63,7 +63,7 @@ ui <- fixedPage(
                                      inputId = "reginfo",
                                      icon = icon("lightbulb"),
                                      label = "More help?"),
-                                   includeMarkdown("txt/plot.md"),
+                                   includeMarkdown("R/txt/plot.md"),
                                    plotOutput("plot"),
                                    actionButton(
                                      inputId = "coefinfo",
@@ -71,21 +71,21 @@ ui <- fixedPage(
                                      label = "A hint?")
                           ),
                           tabPanel("Fit", icon = icon("hand-point-right"),
-                                   includeMarkdown("txt/datafit.md"),
+                                   includeMarkdown("R/txt/datafit.md"),
                                    plotOutput("error"),
-                                   includeMarkdown("txt/datafit2.md"),
+                                   includeMarkdown("R/txt/datafit2.md"),
                           ),
                           tabPanel("Variance", icon = icon("times"),
-                                   includeMarkdown("txt/variance.md"),
+                                   includeMarkdown("R/txt/variance.md"),
                                    plotOutput("total"),
-                                   includeMarkdown("txt/variance2.md"),
-                                   includeMarkdown("txt/variance3.md"),
+                                   includeMarkdown("R/txt/variance2.md"),
+                                   includeMarkdown("R/txt/variance3.md"),
                                    plotOutput("regression")
                           ),
                           tabPanel("R squared", icon = icon("hand-peace"),
-                                   includeMarkdown("txt/variance4.md"),
+                                   includeMarkdown("R/txt/variance4.md"),
                                    plotOutput("variance"),
-                                   includeMarkdown("txt/variance5.md")
+                                   includeMarkdown("R/txt/variance5.md")
                           )
 
               )
@@ -100,8 +100,8 @@ ui <- fixedPage(
 server <- function(input, output, session) {
 
   thematic::thematic_shiny()
-  Sys.sleep(3) # do something that takes time
-  waiter::waiter_hide()
+  #Sys.sleep(3) # do something that takes time
+  #waiter::waiter_hide()
 
 
 #Select data
@@ -182,7 +182,9 @@ server <- function(input, output, session) {
 
   ### Scatter
   output$scatter <- renderPlot({
-    ggplot(Rawdata(), aes(x=x, y=y)) +
+    data <- Rawdata()
+
+    ggplot(data, aes(x=x, y=y)) +
       geom_point()+
       geom_smooth()+
       theme(axis.title = element_text(size = 18),
@@ -191,7 +193,9 @@ server <- function(input, output, session) {
             panel.background=element_rect(fill="white",colour="black"))+
       xlab(input$iv)+
       ylab(input$dv)+
-      ggtitle("Scatter plot")
+      ggtitle("Scatter plot New")
+
+
   })
 
   # bivariate model
