@@ -1,13 +1,6 @@
-# Docker Compose file to run the Shiny app container
-version: '3.8'
-
 services:
   shinyapp:
     image: ghcr.io/edgar-treischl/linearregressionapp:latest
     ports:
-      - "8080:80"    # Map container port 80 to host 8080
+      - "8080:80"
     restart: unless-stopped
-    environment:
-      - SOME_ENV_VAR=value  # Add if you need environment variables
-    volumes:
-      - ./app-data:/app/data  # If you want to persist data or logs outside container
