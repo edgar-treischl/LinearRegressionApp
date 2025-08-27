@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apache2-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory inside the container
+# Set working directory
 WORKDIR /app
 
 # Copy app code, renv.lock, nginx config, and htpasswd file
@@ -26,27 +26,25 @@ COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/.htpasswd /etc/nginx/.htpasswd
 COPY start.sh /start.sh
 
-# Make sure start.sh is executable
+# Ensure start.sh is executable
 RUN chmod +x /start.sh
 
-# Install renv and restore package environment
+# Install renv and restore packages
 RUN R -e "install.packages('renv', repos = 'https://cloud.r-project.org'); renv::restore(confirm = FALSE)"
-
-# Install markdown package explicitly (required by your app)
 RUN R -e "install.packages('markdown', repos = 'https://cloud.r-project.org')"
 
-# Create a non-root user for security and fix permissions
+# Create non-root user and fix permissions (including /run for nginx)
 RUN useradd -m -s /bin/bash shinyuser && \
-    chown -R shinyuser:shinyuser /app && \
     mkdir -p /var/lib/nginx/body && \
     mkdir -p /var/log/nginx && \
-    chown -R shinyuser:shinyuser /var/lib/nginx /var/log/nginx
+    mkdir -p /run && \
+    chown -R shinyuser:shinyuser /app /var/lib/nginx /var/log/nginx /run
 
 # Switch to non-root user
 USER shinyuser
 
-# Expose port 80
+# Expose port 80 for nginx
 EXPOSE 80
 
-# Start script (should start both shiny-server and nginx)
+# Start both Shiny and nginx
 CMD ["/start.sh"]
