@@ -1,5 +1,5 @@
-# Use a lightweight R base image
-FROM rocker/r-ver:4.4
+# Use rocker image with R and Shiny Server preinstalled
+FROM rocker/shiny:4.4.0
 
 # Avoid interactive prompts during install
 ENV DEBIAN_FRONTEND=noninteractive
@@ -35,18 +35,18 @@ RUN R -e "install.packages('renv', repos = 'https://cloud.r-project.org'); renv:
 # Install markdown package explicitly (required by your app)
 RUN R -e "install.packages('markdown', repos = 'https://cloud.r-project.org')"
 
-# Create a non-root user for security and fix permissions for app and nginx directories
-RUN useradd -m -s /bin/bash shiny && \
-    chown -R shiny:shiny /app && \
+# Create a non-root user for security and fix permissions
+RUN useradd -m -s /bin/bash shinyuser && \
+    chown -R shinyuser:shinyuser /app && \
     mkdir -p /var/lib/nginx/body && \
     mkdir -p /var/log/nginx && \
-    chown -R shiny:shiny /var/lib/nginx /var/log/nginx
+    chown -R shinyuser:shinyuser /var/lib/nginx /var/log/nginx
 
 # Switch to non-root user
-USER shiny
+USER shinyuser
 
-# Expose port 80 for nginx
+# Expose port 80
 EXPOSE 80
 
-# Start nginx and shiny server when container launches
+# Start script (should start both shiny-server and nginx)
 CMD ["/start.sh"]
