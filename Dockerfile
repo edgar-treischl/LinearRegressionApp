@@ -39,7 +39,8 @@ RUN R -e "install.packages('markdown', repos = 'https://cloud.r-project.org')"
 RUN useradd -m -s /bin/bash shiny && \
     chown -R shiny:shiny /app && \
     mkdir -p /var/lib/nginx/body && \
-    chown -R shiny:shiny /var/lib/nginx
+    mkdir -p /var/log/nginx && \
+    chown -R shiny:shiny /var/lib/nginx /var/log/nginx
 
 # Switch to non-root user
 USER shiny
