@@ -24,9 +24,12 @@ WORKDIR /app
 COPY . /app
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/.htpasswd /etc/nginx/.htpasswd
+COPY start.sh /start.sh
 
 # Install renv and restore package environment
 RUN R -e "install.packages('renv', repos = 'https://cloud.r-project.org'); renv::restore(confirm = FALSE)"
+
+RUN R -e "install.packages('markdown', repos = 'https://cloud.r-project.org')"
 
 # Create a non-root user for security
 RUN useradd -m -s /bin/bash shiny && \
@@ -38,5 +41,5 @@ USER shiny
 EXPOSE 80
 
 # Start nginx and shiny server when container launches
-CMD sudo service nginx start && \
-    R -e "shiny::runApp('/app', host='127.0.0.1', port=3838)"
+CMD ["/start.sh"]
+
