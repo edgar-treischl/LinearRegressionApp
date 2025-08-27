@@ -1,20 +1,42 @@
-# Use your custom base image with R, Shiny Server, renv, and NGINX
-FROM ghcr.io/edgar-treischl/shinyserver:latest
+# Use a lightweight R base image
+FROM rocker/r-ver:4.4
 
-# Copy app code and renv files
-COPY . /srv/shiny-server/app
+# Avoid interactive prompts during install
+ENV DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /srv/shiny-server/app
+# Install system libraries and nginx
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libxt-dev \
+    pandoc \
+    nginx \
+    apache2-utils \
+    && rm -rf /var/lib/apt/lists/*
 
-# Restore packages from renv.lock
-RUN R -e "renv::restore(prompt = FALSE)"
+# Set working directory inside the container
+WORKDIR /app
 
-# You can optionally override Basic Auth or NGINX config if needed
-# COPY custom-nginx.conf /etc/nginx/nginx.conf
-# COPY .htpasswd /etc/nginx/.htpasswd
+# Copy app code, renv.lock, nginx config, and htpasswd file
+COPY . /app
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/.htpasswd /etc/nginx/.htpasswd
 
-# Expose default port used by NGINX (which proxies to Shiny Server)
+# Install renv and restore package environment
+RUN R -e "install.packages('renv', repos = 'https://cloud.r-project.org'); renv::restore(confirm = FALSE)"
+
+# Create a non-root user for security
+RUN useradd -m -s /bin/bash shiny && \
+    chown -R shiny:shiny /app
+
+USER shiny
+
+# Expose port 80 for nginx
 EXPOSE 80
 
-# Start both nginx and shiny-server
-CMD service nginx start && exec shiny-server
+# Start nginx and shiny server when container launches
+CMD sudo service nginx start && \
+    R -e "shiny::runApp('/app', host='127.0.0.1', port=3838)"
