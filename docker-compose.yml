@@ -1,3 +1,4 @@
+# Docker Compose file to run the Shiny app container
 version: '3.8'
 
 services:
