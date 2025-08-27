@@ -27,6 +27,7 @@ WORKDIR /app
 COPY data /app/data
 COPY app.R /app/
 COPY R/ /app/R/
+COPY renv.lock /app/renv.lock
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/.htpasswd /etc/nginx/.htpasswd
 COPY start.sh /start.sh
